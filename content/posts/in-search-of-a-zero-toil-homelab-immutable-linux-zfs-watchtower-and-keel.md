@@ -100,7 +100,7 @@ That's not always ideal though, maybe you want to use the old data to fixup the 
 
 No problem, you don't even have to lose the current state, you can restore the old snapshot and keep the current `HEAD` \- then compare the old vs new data to fix things up
 
-[![](/wp-content/uploads/2024/03/image.png)](/wp-content/uploads/2024/03/image.png)[![](/wp-content/uploads/2024/03/image-1.png)](/wp-content/uploads/2024/03/image-1.png)
+[![](/wp-content/uploads/2024/03/image.png)](/wp-content/uploads/2024/03/image.png)[![](/wp-content/uploads/2024/03/image-1.png?w=1024)](/wp-content/uploads/2024/03/image-1.png)
 
 Here I clone a point in time snapshot into a new mountable ISCSI disk
 
@@ -163,7 +163,7 @@ $ sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.s
 
 To finish it off, I've set it up [its notifications](https://containrrr.dev/watchtower/notifications/), using my [`SMTP -> Signal` bridge](https://github.com/lawrencegripper/signald-smtp-bridge), to ping me a note when it does it. That's it, no more manual update of docker-compose based apps. I get these nice messages on [Signal](https://www.signal.org/) when it updates something:
 
-[![](/wp-content/uploads/2024/03/image-2.png)](/wp-content/uploads/2024/03/image-2.png)
+[![](/wp-content/uploads/2024/03/image-2.png?w=1024)](/wp-content/uploads/2024/03/image-2.png)
 
 **What about the Kubernetes application you ask?**
 
@@ -191,11 +191,11 @@ Put together this looks like 👇
 
 As with `watchtower` I configured `keel`'s notifications to use the [`SMTP -> Signal`](https://github.com/lawrencegripper/signald-smtp-bridge) bridge to get notifications of updates going out.
 
-[![](/wp-content/uploads/2024/03/image-3.png)](/wp-content/uploads/2024/03/image-3.png)
+[![](/wp-content/uploads/2024/03/image-3.png?w=1006)](/wp-content/uploads/2024/03/image-3.png)
 
 A nice added bonus is that Kell it has a UI showing you what updates have been applied
 
-[![](/wp-content/uploads/2024/03/image-5.png)](/wp-content/uploads/2024/03/image-5.png)
+[![](/wp-content/uploads/2024/03/image-5.png?w=1024)](/wp-content/uploads/2024/03/image-5.png)
 
 **What about package updates on Fedora CoreOS?**
 

@@ -14,4 +14,4 @@ This was a quick fun hack to pull back the data from my solar inverter and displ
 
 Here's the code
 
-https://gist.github.com/lawrencegripper/82cd90402f6d6b3971a7729a5e2ccb2f
+{{< gist lawrencegripper 82cd90402f6d6b3971a7729a5e2ccb2f >}}

@@ -60,6 +60,6 @@ tailscale-test-acls:
 
 That's it, all done!
 
-[![](/wp-content/uploads/2024/03/image-6.png)](/wp-content/uploads/2024/03/image-6.png)
+[![](/wp-content/uploads/2024/03/image-6.png?w=1024)](/wp-content/uploads/2024/03/image-6.png)
 
 Bonus: Tailscale ACL files are `hujson` format, allowing comments and tailing commas. You can setup VSCode to recognize this as valid to avoid it showing errors when editing the files, [instructions here](https://github.com/tailscale/hujson?tab=readme-ov-file#visual-studio-code-association).

@@ -10,7 +10,7 @@ url: /2021/06/21/medbot-sick-children-signal-group-bot-graphs-and-timelines/
 ---
 This is a brain-dump rather than a fully fleshed out blog. Most of the code was written with an unwell small human sleeping on me and python isn't my best language, it's very much a hack.
 
-[![](/wp-content/uploads/2021/06/screenshot-2021-06-19-at-08.06.37.png)](/wp-content/uploads/2021/06/screenshot-2021-06-19-at-08.06.37.png)
+[![](/wp-content/uploads/2021/06/screenshot-2021-06-19-at-08.06.37.png?w=1005)](/wp-content/uploads/2021/06/screenshot-2021-06-19-at-08.06.37.png)
 
 I have two kids, both have asthma and chest issues. Unfortunately, these are things you manage rather than cure, they're more prone to normal colds escalating quickly and need more medical interventions in general.
 
@@ -47,7 +47,7 @@ I used the 'reaction' in Signal to show that the bot has successfully picked up 
 
 Last when someone sends a message 'graphs' the bot should build out graphs and share them back to the group.
 
-[![](/wp-content/uploads/2021/06/image-2.png)](/wp-content/uploads/2021/06/image-2.png)
+[![](/wp-content/uploads/2021/06/image-2.png?w=948)](/wp-content/uploads/2021/06/image-2.png)
 
 What does this code look like? See the Semaphone examples for a full fledged starting point (seriously they're awesome). In the meantime, I'll show my specific bits. It's surprisingly small, I added a handler to the bot to detect messages that had a temperature in them using a regex and insert them into the `temperature` table in sqlite.
 
@@ -61,7 +61,7 @@ The handler and graph rendering look like this, I was seriously impressed with `
 
 https://gist.github.com/lawrencegripper/9581ee2c654a8171af0e376628200467
 
-[![](/wp-content/uploads/2021/06/image-5.png)](/wp-content/uploads/2021/06/image-5.png)
+[![](/wp-content/uploads/2021/06/image-5.png?w=636)](/wp-content/uploads/2021/06/image-5.png)
 
 Last was drawing the timelines, [labella was awesome here](https://github.com/GjjvdBurg/labella.py/blob/master/examples/timeline_kit_1.pdf), I had to hack a bit but it does awesome stuff like let you pick a colour for the item based on it's content. With this I could label different types of medication with different colours on the timeline.
 
@@ -69,7 +69,7 @@ https://gist.github.com/lawrencegripper/b2c31fc910b88353debc202e61426905
 
 What does this look like when drawn? (Granted I've picked rubbish colors).
 
-[![](/wp-content/uploads/2021/06/image-3.png)](/wp-content/uploads/2021/06/image-3.png)
+[![](/wp-content/uploads/2021/06/image-3.png?w=574)](/wp-content/uploads/2021/06/image-3.png)
 
 It gives a chronologically accurate timeline with each medicine or item type easily distinguishable. This is useful to take in how things are going over 24 hours and also spot issues with missed doses.
 

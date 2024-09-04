@@ -27,6 +27,6 @@ So I took the work of [Alexandre and wrapped it into this provider](https://clou
 
 This is currently a simple hack and hasn't undergone any significant testing: [https://github.com/lawrencegripper/hack-databricksterraform](https://github.com/lawrencegripper/hack-databricksterraform). The flow is as follows:
 
-![](/wp-content/uploads/2020/03/image.png?w=399)
+![](/wp-content/uploads/2020/03/image.png)
 
 Hopefully this might be useful to others as a starting point for others.

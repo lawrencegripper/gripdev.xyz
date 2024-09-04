@@ -12,6 +12,6 @@ For some testing I'm doing I need a set of images of a specific size to simulate
 
 [Here is a quick script I put together](https://gist.github.com/lawrencegripper/5c25d5fdd13a3233144d87e972b52fb2) for generating a 200mb, 600mb, 1000mb and 2000mb image (tiny bit larger as alpine included). Took a while to work out best to use `/dev/urandom` not `/dev/zero` as with `zero` the images got compressed for transfer.
 
-![](/wp-content/uploads/2020/02/image.png?w=1024)
+![](/wp-content/uploads/2020/02/image.png)
 
 https://gist.github.com/lawrencegripper/5c25d5fdd13a3233144d87e972b52fb2

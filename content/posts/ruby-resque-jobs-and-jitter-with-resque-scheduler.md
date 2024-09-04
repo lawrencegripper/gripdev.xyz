@@ -18,4 +18,4 @@ To do this for Resque we can use [resque-scheduler](https://github.com/resque/re
 
 Here is an example of this all wired up (note: We ended up using a slightly different code for the prod implementation due to requirements on our side, be sure to test the below works for you before adopting).
 
-https://gist.github.com/lawrencegripper/8e701b0d201e65af0f8bc9b8b0b14207
+{{< gist lawrencegripper 8e701b0d201e65af0f8bc9b8b0b14207 >}}

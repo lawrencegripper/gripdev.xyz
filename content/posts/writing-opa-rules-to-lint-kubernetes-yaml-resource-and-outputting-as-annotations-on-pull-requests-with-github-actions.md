@@ -46,4 +46,4 @@ We can then use `jq` to parse the json output from `conftest` and convert it to 
 
 Here is a gist of this wrapped together.
 
-https://gist.github.com/lawrencegripper/56aa710d788be8d0d6d1bad72a50943f
+{{< gist lawrencegripper 56aa710d788be8d0d6d1bad72a50943f >}}

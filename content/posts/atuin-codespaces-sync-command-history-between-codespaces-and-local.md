@@ -38,4 +38,4 @@ Lastly, adding in a key binding for [`i3`](https://i3wm.org/) and I can now `WIN
 
 Putting this all together you get (files trimmed to only the relevant bits).
 
-https://gist.github.com/lawrencegripper/28fa370211dae966cc28efc369c902b5
+{{< gist lawrencegripper 28fa370211dae966cc28efc369c902b5 >}}

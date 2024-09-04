@@ -71,7 +71,7 @@ Then we can use this parameter when setting up our metric graph like so, we can 
 
 **Now we're they're** the code/json of the workbook no longer contains any hard coded references to ID's
 
-[![](/wp-content/uploads/2021/04/image-7.png)](/wp-content/uploads/2021/04/image-7.png)
+[![](/wp-content/uploads/2021/04/image-7.png?w=661)](/wp-content/uploads/2021/04/image-7.png)
 
 You can see the "ResourceIds" is now set by out "ResourceApplicationPlans" parameter which is dynamically generated and selects all the App Plans that are deployed in the resource group the workbook is deployed in.
 
@@ -79,4 +79,4 @@ We can now automate the deployment of the workbook without templating the json!
 
 **Bonus** if you add a new App Plan the workbook will pick it up and start graphing it. You can use the same approach to add parameters detecting other resource types like cosmos and graph those too.
 
-[![](/wp-content/uploads/2021/04/image-8.png)](/wp-content/uploads/2021/04/image-8.png)
+[![](/wp-content/uploads/2021/04/image-8.png?w=879)](/wp-content/uploads/2021/04/image-8.png)

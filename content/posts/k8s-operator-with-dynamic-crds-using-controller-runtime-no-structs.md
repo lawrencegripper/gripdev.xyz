@@ -44,21 +44,21 @@ To use this meaningfully we're going to have to tell it the type it represents -
 
 Great so hooking these two up together we can create an `Unstructured` instance that represents a CRD, like so!
 
-![](/wp-content/uploads/2020/07/image.png?w=946)
+![](/wp-content/uploads/2020/07/image.png)
 
 Cool, so what can we do from here? Well the controller runtime uses the `runtime.object` interface for all it's interactions and guess what we have now? Yup a `runtime.Object`.. wrapper method to make things obvious
 
-![](/wp-content/uploads/2020/07/image-1.png?w=1024)
+![](/wp-content/uploads/2020/07/image-1.png)
 
 Well now we can create an instance of the controller for our `unstructured` CRD.
 
-![](/wp-content/uploads/2020/07/image-2.png?w=1024)
+![](/wp-content/uploads/2020/07/image-2.png)
 
 Notice that I'm passing the `GroupVersionKind` into the controller struct - this will be useful when we come to make changes to a CRD we're handling.
 
 In the same way that you can use the `r.Client` on the controller in Kubebuilder you can now use it with the `unstructured` resource. We use the `gvk` again here to set the type so that the `client` knows how to work with it.
 
-![](/wp-content/uploads/2020/07/image-4.png?w=1024)
+![](/wp-content/uploads/2020/07/image-4.png)
 
 Now you might be thinking - wow isn't it going to be painful working without the strongly typed CRD structs?
 
