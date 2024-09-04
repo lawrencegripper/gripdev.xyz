@@ -1,0 +1,37 @@
+baseURL: http://blog.gripdev.xyz
+languageCode: en
+title: GripDev
+theme: PaperMod
+taxonomies:
+  category: category
+  tag: tag
+params:
+  description: Code, Apps and Thoughts @lawrencegripper
+  defaultTheme: auto
+  disableThemeToggle: true
+  showShareButtons: true
+  showReadingTime: true
+  showToc: false
+  showBreadCrumbs: true
+  showCodeCopyButtons: true
+  comments: true
+  hideFooter: true
+  assets:
+    favicon: /favicon.ico
+    disableHLJS: true
+markup:
+  highlight:
+    codeFences: true
+    guessSyntax: true
+    style: monokai
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+outputFormats:
+  RSS:
+    mediaType: application/rss+xml
+    baseName: feed
+menu:
+  main: []
