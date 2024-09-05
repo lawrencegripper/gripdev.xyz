@@ -1,10 +1,12 @@
 baseURL: http://blog.gripdev.xyz
 languageCode: en
 title: gripdev.xyz
-theme: PaperMod
 taxonomies:
   category: category
   tag: tag
+module:
+  imports:
+    path: "github.com/hugo-sid/hugo-blog-awesome"
 params:
   description: Code, Apps and Thoughts @lawrencegripper
   defaultTheme: auto
