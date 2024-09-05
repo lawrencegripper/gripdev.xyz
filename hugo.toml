@@ -21,7 +21,7 @@ showToc = false
 showBreadCrumbs = true
 showCodeCopyButtons = true
 comments = true
-hideFooter = true
+# hideFooter = true
 mainSections = ['posts']
 
 
@@ -31,6 +31,9 @@ avatar = "lawrencegripper.jpeg" # put the file in assets folder; also ensure tha
 intro = "Code and Thoughts"
 name = "Lawrence Gripper"
 description = "I’m Lawrence Gripper, a software engineer working at GitHub"
+
+# [params.assets]
+# disableHLJS = true
 
 [params.assets]
 favicon = "/favicon.ico"
