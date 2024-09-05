@@ -1,6 +1,6 @@
 baseURL: http://blog.gripdev.xyz
 languageCode: en
-title: GripDev.xyz
+title: gripdev.xyz
 theme: PaperMod
 taxonomies:
   category: category
