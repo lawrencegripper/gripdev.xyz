@@ -26,7 +26,7 @@ avatar = "lawrencegripper.jpeg" # put the file in assets folder; also ensure tha
 # Note: image is not rendered if the resource(avatar image) is not found. No error is displayed.
 intro = "Code and Thoughts"
 name = "Lawrence Gripper"
-description = "I’m Lawrence Gripper, a software engineer working at GitHub"
+description = "I’m Lawrence Gripper, a software engineer"
 
 # [params.assets]
 # disableHLJS = true
