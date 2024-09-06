@@ -120,7 +120,7 @@ For example, it doesn't use the full stack of K8s, [swapping out `etcd` for the 
 
 Let's get it configure to update itself without any toil from us. Once we install the `upgrade-controller` we can `kubectl apply` an update plan, like so 👇, which says "keep yourself up-to-date with the latest stable release". **That's it, no need to spend Sunday updating K8s after, a week of doing it at work 🤩**
 
-```
+```yaml
   apiVersion: upgrade.cattle.io/v1
   kind: Plan
   metadata:
@@ -176,7 +176,7 @@ Here [I use `Keel` which is a similar utility](https://keel.sh/), instead of wat
 
 Put together this looks like 👇
 
-```
+```yaml
   apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -207,7 +207,7 @@ I build the docker image and push it to the repository (in this case I rebuild i
 
 Here is an example `Dockerfile` for CoreOS. It adds `tailscale` and `compose` into a base image. I then build another version on top of that with `k3s` for the Kube nodes.
 
-```
+```dockerfile
 FROM quay.io/fedora/fedora-coreos:stable as homenet-fcos-base
 RUN date >> /etc/homenet-fcos-build-at.txt
 ADD ./rpm-repos/tailscale-stable.repo /etc/yum.repos.d/

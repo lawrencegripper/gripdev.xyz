@@ -36,7 +36,7 @@ When digging through the source code of the GitHub Action I found this Go CLI ut
 
 This little script uses `gitops-pusher` to update my ACLS (note: I use 1Password injection to pull secrets, [talk about this more here](/2024/02/26/homelab-using-1password-cli-to-handle-secrets-in-kubernetes-compose-yaml/))
 
-```
+```bash
 #!/bin/bash
 
 if ! command -v gitops-pusher &> /dev/null; then
@@ -52,7 +52,7 @@ gitops-pusher --policy-file ./tailscale/acls.hujson $1
 
 I can then call this from my `make` file like so:
 
-```
+```make
 tailscale-test-acls:
 	cat ./tailscale/update-acls.sh | op inject | bash -s -- testtailscale-push-acls:
 	cat ./tailscale/update-acls.sh | op inject | bash -s -- apply
