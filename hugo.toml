@@ -1,19 +1,15 @@
 baseURL = "http://blog.gripdev.xyz"
 languageCode = "en"
 title = "gripdev.xyz"
+theme = "hugo-blog-awesome"
 
 [taxonomies]
 category = "category"
 tag = "tag"
 
-[module]
-imports = [
-  { path = "github.com/hugo-sid/hugo-blog-awesome" }
-]
-
 [params]
 description = "Code, Apps and Thoughts @lawrencegripper"
-defaultTheme = "auto"
+defaultTheme = "hugo-blog-awesome"
 disableThemeToggle = true
 showShareButtons = true
 showReadingTime = true
