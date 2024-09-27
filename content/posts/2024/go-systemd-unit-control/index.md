@@ -14,11 +14,11 @@ I'm current working on code which lives in an agent, written in [`golang`](https
 
 The agent needs to, when a new version of an application is deployed, restart the `systemd unit` and make sure it comes up healthy and running.
 
-There is what a demo version of it looks like:
+Here is the output of what we're going to build:
 
 ![demo output restarting service](./image.png)
 
-## Option 1: Call `systemctl` and parse the `stdout`
+## Dead-end: Try calling `systemctl` and parse the `stdout`
 
 This is the most obvious route. You `exec.Command` and look at the output. 
 
@@ -28,7 +28,7 @@ Then when you are monitoring you'll end up wrapping this in a `for {}` loop.
 
 This didn't feel like a great option. Can we do better?
 
-## Option 2: Talking to `dbus` from `golang`
+## `go-systemd` Library: Talking to `systemd` via `dbus`
 
 What's `dbus`? 
 
