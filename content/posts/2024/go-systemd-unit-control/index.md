@@ -12,7 +12,7 @@ url: /2024/09/27/golang-restart-systemd-unit/
 
 I'm current working on code which lives in an agent, written in [`golang`](https://go.dev/), which is running on a fleet of machines.
 
-The agents needs to monitors and restart a `systemd` service when a new version of an application is deployed.
+The agent needs to, when a new version of an application is deployed, restart the `systemd unit` and make sure it comes up healthy and running.
 
 There is what a demo version of it looks like:
 
