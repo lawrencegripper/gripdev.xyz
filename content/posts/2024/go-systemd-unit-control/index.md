@@ -18,7 +18,7 @@ Here is the output of what we're going to build:
 
 ![demo output restarting service](./image.png)
 
-## Dead-end: Try calling `systemctl` and parse the `stdout`
+## ☠️ Dead-end: Try calling `systemctl` and parse the `stdout`
 
 This is the most obvious route. You `exec.Command` and look at the output. 
 
@@ -28,7 +28,7 @@ Then when you are monitoring you'll end up wrapping this in a `for {}` loop.
 
 This didn't feel like a great option. Can we do better?
 
-## `go-systemd` Library: Talking to `systemd` via `dbus`
+## 🚀 `go-systemd` Library: Talking to `systemd` via `dbus`
 
 What's `dbus`? 
 
@@ -40,12 +40,12 @@ There is [lovely doc](https://www.freedesktop.org/wiki/Software/systemd/dbus/) s
 
 Even better there is a go library [coreos/go-systemd](https://github.com/coreos/go-systemd) which gives a nice way to interface with that `dbus` interface.
 
-The result it some nice, strongly typed, bit that let you talk to `systemd`
+The result it some nice, strongly typed, methods that let you talk to `systemd`
 
-Let's connect and list the services on the box
+Let's connect and list the services on the box 👇
 
 ```golang
-// What service are we looking at?
+    // What service are we looking at?
 	targetSystemdUnit := "fakemill.service"
 
 	ctx := context.Background()
