@@ -10,8 +10,9 @@ title: "Advanced Docker: Using Secrets to temporarily mount sensitive info durin
 url: /2024/10/08/advanced-docker-techniques
 ---
 
-If you're working with `docker` and/or `docker-compose` here is a collection
-of tips and tricks to make life easier, quicker and simpler. 
+So you have a docker build which requires access to an authenticated resource?
+
+Docker Secrets can help do this cleanly!
 
 ## Temporarily provide build-time secrets
 
