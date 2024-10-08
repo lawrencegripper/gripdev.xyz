@@ -1,13 +1,13 @@
 ---
-author: gripdev
-draft: true
+author: lawrencegripper
 category:
   - programming
   - docker
   - docker-compose
-date: "2024-10-08T21:02:00+00:00"
-title: "Advanced Docker: Mount inline config files from docker-compose file"
-url: /2024/10/08/advanced-docker-techniques
+  - advanced-docker
+date: "2024-10-08T07:02:00+00:00"
+title: "Simpler docker-compose with inline config files"
+url: /2024/10/08/advanced-docker-compose-inline-config
 ---
 
 So you have some config that you want to provide to a service started from `docker compose`. 
@@ -75,7 +75,9 @@ services:
 
 ```
 
-## Further reading
+## Docs
 
 Here are the Docker docks which go into more detail:
-- [Config section in Docker Compose](https://docs.docker.com/reference/compose-file/configs/)
+- [🚢 Config section in Docker Compose](https://docs.docker.com/reference/compose-file/configs/)
+
+{{< catlisttitle category="advanced-docker" title="Mini Series" desc="This is part of a set of posts on useful Advanced Docker techniques" >}}
