@@ -10,9 +10,11 @@ url: /2024/09/27/golang-restart-systemd-unit/
 ---
 
 
-I'm current working on code which lives in an agent, written in [`golang`](https://go.dev/), which is running on a fleet of machines.
+I'm current working on code which lives in an agent, written in [`golang`](https://go.dev/), 
+which is running on a fleet of machines.
 
-The agent needs to, when a new version of an application is deployed, restart the `systemd unit` and make sure it comes up healthy and running.
+The agent needs to, when a new version of an application is deployed, 
+restart the `systemd unit` and make sure it comes up healthy and running.
 
 Here is the output of what we're going to build:
 
@@ -81,7 +83,8 @@ Let's connect and list the services on the box 👇
 	}
 ```
 
-Now we know the service exists, let's restart it, notice we can use `channels` to subscribe to results here, we'll do some more of this later too. 
+Now we know the service exists, let's restart it, notice we can use `channels` to subscribe to results here, 
+we'll do some more of this later too. 
 
 ```golang
     completedRestartCh := make(chan string)
@@ -107,13 +110,15 @@ Now we know the service exists, let's restart it, notice we can use `channels` t
 	}
 ```
 
-Because we have channels we can make use of the `select` statement, waiting on the restart command to compete or 30 secs to pass, at which point we can give up and timeout. 
+Because we have channels we can make use of the `select` statement, waiting on the restart command to 
+compete or 30 secs to pass. If we can't successfully restart in that time we can give up and timeout. 
 
 So now the service has been restarted, how do we tell if it's healthy and running?
 
 Well we can use a similar approach, `coreos/go-systemd` lets you subscribe to changes for services. 
 
-You pass 2 functions, one to filter the services that you're interested in and another to check if the change is one you care about or not. 
+You pass 2 functions, one to filter the services that you're interested in and another to check if the 
+change is one you care about or not. 
 
 Here is an example
 
