@@ -26,7 +26,7 @@ The frontend is hosting source code, docker images and build systems.
 
 The database cluster is run on machines and during deployment scripts are executed which pull new configuration, code and containers which together make the database cluster function. 
 
-Have you spotted it yet? If you deploy a broken version to the database cluster it results in the frontend being down. To fix the database cluster you need to deploy a change but the deploy script for the cluster needs to pull assets from the frontend. 
+Have you spotted it yet? If you deploy a broken version to the database cluster it results in the frontend being down. To fix the database cluster you need to deploy a change but the deploy script for the cluster needs to pull assets from the frontend.
 
 ```mermaid
 sequenceDiagram

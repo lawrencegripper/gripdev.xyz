@@ -30,6 +30,7 @@
                     : THEMES.LIGHT;
                 break;
         }
+        localStorage.setItem(LS_THEME_KEY, state);
         return state;
     };
 

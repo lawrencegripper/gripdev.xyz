@@ -7,5 +7,15 @@
         {{- block "main" . }}{{- end }}
         {{- partial "footer.html" . -}}
         {{- partial "scriptsBodyEnd.html" . -}}
+        {{ if .Store.Get "hasMermaid" }}
+          <script type="module">
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+            let mermaidTheme = "default";
+            if (localStorage.getItem("theme") === "dark") {
+                mermaidTheme = "dark";
+            }
+            mermaid.initialize({ startOnLoad: true, theme: mermaidTheme, });
+          </script>
+        {{ end }}
     </body>
 </html>
