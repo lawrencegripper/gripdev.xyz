@@ -59,6 +59,7 @@
     };
 
     window.addEventListener("DOMContentLoaded", () => {
+        getThemeState();
         // Theme switch
         const lamp = document.getElementById("mode");
 
