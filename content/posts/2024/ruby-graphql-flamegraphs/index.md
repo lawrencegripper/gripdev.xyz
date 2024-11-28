@@ -191,10 +191,12 @@ Let's try it out, we'll fire up GraphiQL and make a query specifying `flamegraph
 
 This doesn't just work for `N+1` issues. It helps you track down most performance issues, such as a slow method.
 
-Here is [an example](https://github.com/sqids/sqids-ruby/issues/6) of how this approach helped me identify that misusing the ruby SQID library was contributing 53% of the time to serve requests in one of our systems. 
+Here is [an example](https://github.com/sqids/sqids-ruby/issues/6) of how this approach helped me identify that the ruby SQID library was contributing 53% of the time to serve requests in one of our systems.
 
 ![sqid speedscope](./sqid%20speedscope.png)
 
-The issue dives into the details of how the flamegraph helped me track down and resolve the issue in the SQID library!
+With some tweaking I got that method down from 3.31ms to 0.07ms 🥳
+
+The issue dives into the details of how the flamegraph helped me track down and resolve the issue in the SQID library and what I did to fix.
 
 - https://github.com/sqids/sqids-ruby/issues/6
