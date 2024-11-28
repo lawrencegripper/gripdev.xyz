@@ -9,7 +9,7 @@ category:
 date: "2024-11-28T07:02:00+00:00"
 title: "Ruby: Use flamegraphs to investigate GraphQL performance issues"
 url: /2024/10/08/ruby-flamegraphs-graphql-performance-issues
-draft: true
+draft: false
 ---
 
 GraphQL can throw up some surprising [N+1 style performance issues](https://www.visuality.pl/posts/n-1-in-ruby-on-rails) in Ruby on Rails.
