@@ -21,11 +21,13 @@ To fix that up I'm now using [WezTerm](https://wezfurlong.org/wezterm/)'s [`user
 Any window in WezTerm which writes out the `user var` escape sequence triggers a function in the
 WezTerm lua config. For example 👇 will send `name: foo value: bar`
 
-`printf "\033]1337;SetUserVar=%s=%s\007" foo `echo -n bar | base64`
+`printf "\033]1337;SetUserVar=%s=%s\007" foo `echo -n bar | base64 -w 0`
+
+> Note: `-w 0` on base64 command otherwise the base64 output is automatically wrapped by inserting newlines which breaks the escape sequence.
 
 This doesn't care if it's in TMUX over nested SSH. It **just works**.
 
-To receive these events do stuff with them you add `wezterm.on('user-var-changed..` to [WezTerm config](https://wezfurlong.org/wezterm/config/files.html).
+To receive these events do stuff with them, you add `wezterm.on('user-var-changed..` to [WezTerm config](https://wezfurlong.org/wezterm/config/files.html).
 
 Here I wire up `weznot` and `weznot`. `weznot` triggers a notification with the `value` passed in and `wezcopy` copies the `value` to the clipboard.
 
@@ -48,13 +50,13 @@ To use these easily I create functions in dotfiles which output the escape seque
 # Send a notification with wezterm use like `do think && weznot "think is done"`
 function weznot() {
     title=$1
-    printf "\033]1337;SetUserVar=%s=%s\007" wez_not $(echo -n "$title" | base64)
+    printf "\033]1337;SetUserVar=%s=%s\007" wez_not $(echo -n "$title" | base64 -w 0)
 }
 
 # Pipeline content to the clipboard `echo "hello" | wezcopy`
 function wezcopy() {
     read clip_stuff
-    printf "\033]1337;SetUserVar=%s=%s\007" wez_copy $(echo -n "$clip_stuff" | base64)
+    printf "\033]1337;SetUserVar=%s=%s\007" wez_copy $(echo -n "$clip_stuff" | base64 -w 0)
 }
 
 # Run a command and notify that the command has failed or succeeded
