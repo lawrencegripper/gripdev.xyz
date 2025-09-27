@@ -8,7 +8,7 @@ url: /2025/01/31/flipper-feature-flag-discovery/
 draft: false
 ---
 
-So you have Flipper in your ruby codebase for handling feature flags but… now you have used them and need
+So you have Flipper in your ruby codebase for handling feature flags but... now you have used them and need
 a way to find them and help you pay down the tech debt of cleaning them up.
 
 Well good news, you can use AST Parsing to find all the instance.
