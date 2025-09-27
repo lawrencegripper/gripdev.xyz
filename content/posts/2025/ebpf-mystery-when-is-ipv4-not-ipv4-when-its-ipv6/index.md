@@ -145,8 +145,7 @@ Low and behold it was a `IPv4 mapped address` 🤯🎉
 
 **When using `DualMode sockets` `dotnet` requests an IPv6 Socket, **even for non-IPv6 requests**, and sets the `user_ip6` address field to be a [IPv4-Mapped](https://en.m.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses) address.**
 
-> What does a IPv4 mapped address look like?  
-> These look like `::ffff:1.1.1.1` encoding the IPv4 address at the end of the IPv6 address.
+> What does a IPv4 mapped address look like? These look like `::ffff:1.1.1.1` encoding the IPv4 address at the end of the IPv6 address.
 
 I thought I must have this wrong, surely you can't just smash an ipv4 address in ipv6 field and magic happens?! Nope, didn't have it wrong, that's what happens. Linux supports this, and will go on to route the request as IPv4.
 
