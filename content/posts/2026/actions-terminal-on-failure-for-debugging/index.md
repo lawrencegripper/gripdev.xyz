@@ -10,6 +10,8 @@ draft: true
 
 **Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/
 
+## Building it
+
 I think we've all been there, **you're build fails in Actions, but the script works fine locally.** You now settle into a slow loop of:
 
 1. Push speculative change
@@ -175,7 +177,7 @@ With a bit of poking, googling and some Opus 4.5, I created some code which esti
 
 ## We're done, right?
 
-What we have so far looks like this:
+Not quite, at this point we have 👇
 
 ```
 ┌─────────────────┐                              ┌─────────────────┐
@@ -195,23 +197,27 @@ What we have so far looks like this:
 
 ```
 
-Not quite, there is a lot of trust that my signaling server will do the right things. Let's do better.
+There is a lot of trust placed in signaling server. It has to the right thing, or it could provide access to someone else's Actions VM. 
+
+Let's do better.
 
 ## Trust vs Zero-Trust
 
-I've mentioned already **the signaling server should only hooks up users with actions they're started**. 
+I've mentioned already **the signaling server should only connect up users with actions they've started**. 
 
-That relies on explicit trust, from users of this system, that I'm going to do the right thing.
+That relies on explicit trust, from users, that I'm going to do the right thing.
 
 What if I've got a bug? What if someone compromises the signaling server? What if they steal the domain and run their own server on it? 
 
-Well, then it could hook up peers that shouldn't be connected and do mean things.
+Well, then they could hook up peers that shouldn't be connected and ... do mean things.
 
-Those both sound bad, lets work out how to fix that.
+That sounds bad, lets work out how to fix that.
 
-What if the `user` provided the Actions VM with a secret that only they know. When the P2P is connected, the Actions VM could refuse to talk to the browser until it provides that secret.
+What if the `user` provided the Actions VM with a secret, that only they know?
 
-Secrets are cool and everything but fit they're intercepted they're reusable, could we use a One-Time-Password (OTP) commonly used for 2FA on sites? Sure thing!
+When the P2P connection is made, the Actions VM could refuse to talk to the browser until it provides the right secret.
+
+Secrets are cool and everything but if they're intercepted they're reusable, could we use a One-Time-Password (OTP) commonly used for 2FA on sites? Sure thing! Even better tools like 1Password will autofill it for you.
 
 What does this flow look like? Roughly it's 👇
 
@@ -234,15 +240,19 @@ What does this flow look like? Roughly it's 👇
                └──────────────────────┘               
 ```
 
-Now, even if the signaling server is manipulated to hook up two peers which shouldn't be connected, the user won't be able to execute commands unless they can provide a OTP. 
+Even if the signaling server is manipulated, to hook up two peers which shouldn't be connected, the user won't be able to execute commands unless they can provide a valid OTP. 
 
-Better still the Signaling server (which I run) is never sent either the OTP or the OTP Secret used to validate each OTP. This validation happens between two peers your own (Actions VM and your Browser).
+Better still the Signaling server (which I run) is never sent either the OTP or the OTP Secret used to validate each OTP. 
 
-## So now we're done? One last thing... make the signaling server cheap to host
+This validation happens between two peers you own (Actions VM and your Browser).
 
-I want to offer this for free for anyone to use. It's a simple `go` binary in a docker image, to allow self-hosting and easy local testing. 
+## So now we're done? 
 
-A while ago I'd started poking at `railway.com`, it's cloud with a big billing twist, **you only pay for the CPU and Memory you actually use**.
+One last thing... make the signaling server cheap to host.
+
+I want to offer this for free for anyone to use. It's a simple `go` binary in a docker image to make it easy to self-hosting and test locally. 
+
+A while ago I'd started poking at [`railway.com`](https://railway.com/), it's cloud with a big billing twist, **you only pay for the CPU and Memory you actually use**.
 
 Let's take an example:
 
@@ -251,12 +261,17 @@ Let's take an example:
 
 > Note: In either Azure/AWS or Railway you still pay network egress.
 
-How does this work out for the signaling server? **Amazingly well**: it's peak memory usage so far is 20MB!
+How does this work out for the signaling server?
+
+**Amazingly well**: it's peak memory usage so far is 20MB!
 
 ![Graph showing 20mb of memory](memory-usage.png)
 
-Even then it feels a bit wasteful running this thing all the time, there will be chunks of time where folks aren't debugging failed actions and don't need the signaling server. 
+Even then it feels a bit wasteful running it all the time. There will be chunks of time when folks aren't using it.
 
-There is a feature that helps here too, "sleeping", it's serverless but without the pain moving away from the docker model. 
+This was where I found a platform feature called [sleeping](https://docs.railway.com/reference/app-sleeping), it's serverless but without the pain of moving away from the docker model to some proprietary runtime. 
 
-When the service isn't doing anything, Railway spin down the service. If someone turns up, they hold the connection while restarting the container. 
+When the service isn't doing anything, Railway spin down the service. If someone turns up, they hold the connection for a moment while restoring the container, then send the request through.
+
+What does a cold start look like on our simple signalling server? It's hardly recognizable! Here is a recording of it happening:
+
