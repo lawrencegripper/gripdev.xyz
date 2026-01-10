@@ -12,7 +12,7 @@ draft: true
 
 ## Building it
 
-I think we've all been there, **you're build fails in Actions, but the script works fine locally.** You now settle into a slow loop of:
+I think we've all been there, **your build fails in Actions, but the script works fine locally.** You now settle into a slow loop of:
 
 1. Push speculative change
 2. See if it worked
@@ -33,7 +33,7 @@ A simple bit of scripting proved it did 🥳 With WebRTC, if the two nodes excha
 
 The next problem is, **how do you prove each end of the P2P connection is who they say they are?**
 
-It's importantly. I want to ensure that `lawrencegripper` can only access terminals for Actions triggered by `lawrencegripper`. 
+It's important. I want to ensure that `lawrencegripper` can only access terminals for Actions triggered by `lawrencegripper`. 
 
 The browser side is relatively easy, we can use OAuth to login via GitHub and get a verified username ✅
 
@@ -128,7 +128,7 @@ The server then, via SSE, sends the Actions VM connectivity details to the brows
 
 At this point they establish the Peer-to-Peer connection 🥳
 
-For bonus points, when a new Actions VM connects I can see if browser open waiting and send them a notification. 
+For bonus points, when a new Actions VM connects I can see if a browser is open waiting and send them a notification. 
 
 ```golang
     runIdRunnerSseClientsMu.Lock()
@@ -167,13 +167,13 @@ On the Actions VM side we create a `pty.Shell` and stream that data over our `da
     });
 ```
 
-In the browser we then need to dispaly an interactive terminal. 
+In the browser we then need to display an interactive terminal. 
 
 Reading around the awesome Ghostty library has an XTerm.js compatible implementation, I hooked this up and it worked first time 🥰
 
 Well it did and it didn't, the Terminal we spawned via PTY doesn't have any idea how big our terminal in the browser (Lines and Columns) so we get some horrible rendering in the terminal. 
 
-With a bit of poking, googling and some Opus 4.5, I created some code which estimates the size of terminal, via font sizing, and converts this to a rough column / rows. Then, on establishing the P2P connection I can sent a `setup` JSON message which the Actions VM uses to start `pty.spawn` with the righ sizing for the terminal.
+With a bit of poking, googling and some Opus 4.5, I created some code which estimates the size of terminal, via font sizing, and converts this to a rough column / rows. Then, on establishing the P2P connection I can send a `setup` JSON message which the Actions VM uses to start `pty.spawn` with the right sizing for the terminal.
 
 ## We're done, right?
 
@@ -197,7 +197,7 @@ Not quite, at this point we have 👇
 
 ```
 
-There is a lot of trust placed in signaling server. It has to the right thing, or it could provide access to someone else's Actions VM. 
+There is a lot of trust placed in the signaling server. It has to do the right thing, or it could provide access to someone else's Actions VM. 
 
 Let's do better.
 
