@@ -1,5 +1,5 @@
 ---
-title: "Using WebRTC and Ghostty to get a terminal when GitHub Actions fail"
+title: "Using WebRTC to get an interactive terminal when GitHub Actions fail"
 date: 2025-05-06T07:02:00+00:00
 author: "Lawrence Gripper"
 tags: ["programming", "github", "actions", "terminal", "debugging"]
@@ -71,7 +71,7 @@ You request a token via a REST request in the action, for example:
 
 > [Complete code](https://github.com/lawrencegripper/actions-term-on-fail/blob/21c8350bc33a4bf4451473eabecc9d7b2eedc716/client/src/index.ts#L35-L70)
 
-Then, when the Action calls the server, it can include this token. The server then validates cryptographically via JWKS:
+Then, when the Action calls our server, it can include this token. We can then validate it cryptographically via JWKS:
 
 ```golang
     const githubOIDCIssuer = "https://token.actions.githubusercontent.com"
@@ -106,10 +106,11 @@ At this point we know:
 
 What's left is the server to introduce the two peers 🤝. Let's build a server to do that.
 
-The server doesn't need to handle the terminal data, that goes between the two peers, it's only doing introductions. 
-When the VM and Browser are connected it sends each one the connection details for the other.
+The server doesn't need to handle the terminal data, that goes between the two peers directly, it's only doing introductions. 
 
-To do this the browser and the VM both create [Server-sent events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) connections to the signaling server, providing their OAuth credentials or OIDC to prove their identity.
+When the VM and Browser are connected to the server it should send each one the connection details for the other.
+
+To do this the browser and the VM both create [Server-sent events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) connections, allowing the signaling server to push events to them. They prove their identities by providing their OAuth credentials or OIDC to prove their identity.
 
 The server then stores:
 
@@ -122,16 +123,14 @@ The server then stores:
 	actorToBrowserSseClientsMu sync.RWMutex
 ```
 
-Both the Actions VM and the browser connect to the server. Giving it their connectivity information. 
-
 The server then, via SSE, sends the Actions VM connectivity details to the browser and the Browser's connectivity details to the Actions VM. 
 
 At this point they establish the Peer-to-Peer connection 🥳
 
-For bonus points, when a new Actions VM connects I can see if a browser is open waiting and send them a notification. 
+For bonus points, when a new Actions VM connects, I can see if a browser is open waiting and send them a notification. 
 
 ```golang
-    runIdRunnerSseClientsMu.Lock()
+	runIdRunnerSseClientsMu.Lock()
 	runIdRunnerSseClient[runId] = client
 	log.Printf("SSE: Runner connected for actor %s (total clients: %d)", actor, len(runIdRunnerSseClient))
 	runIdRunnerSseClientsMu.Unlock()
@@ -169,9 +168,9 @@ On the Actions VM side we create a `pty.Shell` and stream that data over our `da
 
 In the browser we then need to display an interactive terminal. 
 
-Reading around the awesome Ghostty library has an XTerm.js compatible implementation, I hooked this up and it worked first time 🥰
+Reading around the awesome [Ghostty library](https://github.com/coder/ghostty-web) has an xterm.js compatible implementation, I hooked this up and it worked first time 🥰
 
-Well it did and it didn't, the Terminal we spawned via PTY doesn't have any idea how big our terminal in the browser (Lines and Columns) so we get some horrible rendering in the terminal. 
+Well it did.. and it didn't, the Terminal spawned via PTY doesn't have any idea how big our terminal in the browser (Lines and Columns) so we get some horrible rendering in the terminal. 
 
 With a bit of poking, googling and some Opus 4.5, I created some code which estimates the size of terminal, via font sizing, and converts this to a rough column / rows. Then, on establishing the P2P connection I can send a `setup` JSON message which the Actions VM uses to start `pty.spawn` with the right sizing for the terminal.
 
