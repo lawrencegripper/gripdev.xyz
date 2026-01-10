@@ -244,8 +244,19 @@ I want to offer this for free for anyone to use. It's a simple `go` binary in a 
 
 A while ago I'd started poking at `railway.com`, it's cloud with a big billing twist, **you only pay for the CPU and Memory you actually use**.
 
-In Azure/AWS I have to say "I want 2 CPUs and 8GB" and I pay for that regardless of what I use.
+Let's take an example:
 
-On `railway.com` I say "Use **up to** x CPUs and y GB" then you only pay for what the service actually consumes.
+- In Azure/AWS I have to say "I want 2 CPUs and 8GB" and I pay for that regardless of what I use.
+- On `railway.com` I say "Use **up to** x CPUs and y GB" then you only pay for what the service actually consumes.
+
+> Note: In either Azure/AWS or Railway you still pay network egress.
+
+How does this work out for the signaling server? **Amazingly well**: it's peak memory usage so far is 20MB!
 
 ![Graph showing 20mb of memory](memory-usage.png)
+
+Even then it feels a bit wasteful running this thing all the time, there will be chunks of time where folks aren't debugging failed actions and don't need the signaling server. 
+
+There is a feature that helps here too, "sleeping", it's serverless but without the pain moving away from the docker model. 
+
+When the service isn't doing anything, Railway spin down the service. If someone turns up, they hold the connection while restarting the container. 
