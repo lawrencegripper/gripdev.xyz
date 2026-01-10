@@ -37,13 +37,20 @@ The browser side is relatively easy, we can use OAuth to login via GitHub and ge
 
 On the Actions VM [we have OIDC](https://docs.github.com/en/actions/concepts/security/openid-connect), commonly used to auth from Actions to cloud providers. 
 
-Anyone can use it though, it gives us the ability to issue a signed OIDC token which lets us confirm:
+Anyone can use it though, it gives us the ability to issue a signed OIDC token from within our Action which proves:
 
 1. The repo it's running on
 2. The user account that triggered it
-3. We are the intended audience for the token
+3. The audience it is intended for
 
-You request this token via a REST request in the action:
+To enable this feature you set the following permissions in the workflow
+
+```yaml
+    permissions:
+      id-token: write
+```
+
+You request a token via a REST request in the action, for example:
 
 ```typescript
     const requestURL = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
@@ -62,7 +69,7 @@ You request this token via a REST request in the action:
 
 > [Complete code](https://github.com/lawrencegripper/actions-term-on-fail/blob/21c8350bc33a4bf4451473eabecc9d7b2eedc716/client/src/index.ts#L35-L70)
 
-The when the Action calls the server it can include this token and we validate it:
+Then, when the Action calls the server, it can include this token. The server then validates cryptographically via JWKS:
 
 ```golang
     const githubOIDCIssuer = "https://token.actions.githubusercontent.com"
@@ -92,31 +99,34 @@ The when the Action calls the server it can include this token and we validate i
 ## Connecting the Peers (ie. [Signaling Server](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity#signaling)) 
 
 At this point we know:
-1. We can create a connection between two peers (Actions VM and the Users Browser) with WebRTC
-2. We have a way to validate the identity of both ends of the connection
+1. We can create a connection between two peers (Actions VM <-> Users Browser) with WebRTC
+2. We have a way to validate the identity of both ends of the connection (OAuth and OIDC)
 
-What's left is the server to introduce the two peers.
+What's left is the server to introduce the two peers 🤝. Let's build a server to do that.
 
-This server doesn't need to handle the data that goes between the two peers, it's only doing introductions. 
+The server doesn't need to handle the terminal data, that goes between the two peers, it's only doing introductions. 
+When the VM and Browser are connected it sends each one the connection details for the other.
 
-As such we can store all we need like this in `go`. 
+To do this the browser and the VM both create [Server-sent events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) connections to the signaling server, providing their OAuth credentials or OIDC to prove their identity.
 
-The browser and the VM both create a [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) connection to the signaling server, providing their OAuth credentials or OIDC to prove their identity. 
+The server then stores:
 
 ```golang
 	runIdToSessions            = make(map[string]*Session) // runId -> session
 	runIdToSessionsMu          sync.RWMutex
-	runIdRunnerSseClient       = make(map[string]*SSEClient) // runId -> SSE client (runner)
+	runIdRunnerSseClient       = make(map[string]*SSEClient) // runId -> SSE client (Actions VM)
 	runIdRunnerSseClientsMu    sync.RWMutex
 	actorToBrowserSseClients   = make(map[string][]*SSEClient) // actor -> list of browser SSE clients
 	actorToBrowserSseClientsMu sync.RWMutex
 ```
 
-Then we send the Actions VM connectivity details to the browser and the Browser's connectivity details to the Actions VM. 
+Both the Actions VM and the browser connect to the server. Giving it their connectivity information. 
+
+The server then, via SSE, sends the Actions VM connectivity details to the browser and the Browser's connectivity details to the Actions VM. 
 
 At this point they establish the Peer-to-Peer connection 🥳
 
-For bonus points, when a new Actions VM connects I can see if there is a brower session from that user available and send them a notification. 
+For bonus points, when a new Actions VM connects I can see if browser open waiting and send them a notification. 
 
 ```golang
     runIdRunnerSseClientsMu.Lock()
@@ -135,7 +145,7 @@ For bonus points, when a new Actions VM connects I can see if there is a brower 
 
 ## Displaying the Terminal
 
-Ok, we're close now. We have the peers established and signaling server to show it. 
+Ok, we're close now. We have the signaling server to exchange details and then the peers have a p2p connection. 
 
 What about creating a terminal and streaming the data?
 
@@ -146,15 +156,96 @@ On the Actions VM side we create a `pty.Shell` and stream that data over our `da
 ```javascript
     shell = pty.spawn(SHELL, [], {
         name: 'xterm-256color',
-        cols,
-        rows,
         cwd: process.env.GITHUB_WORKSPACE || process.cwd(),
         env: process.env as Record<string, string>,
     });
-
-    console.log(`PTY started with dimensions ${cols}x${rows}, PID:`, shell.pid);
 
     shell.onData((shellData) => {
         dc.sendMessage(shellData);
     });
 ```
+
+In the browser we then need to dispaly an interactive terminal. 
+
+Reading around the awesome Ghostty library has an XTerm.js compatible implementation, I hooked this up and it worked first time 🥰
+
+Well it did and it didn't, the Terminal we spawned via PTY doesn't have any idea how big our terminal in the browser (Lines and Columns) so we get some horrible rendering in the terminal. 
+
+With a bit of poking, googling and some Opus 4.5, I created some code which estimates the size of terminal, via font sizing, and converts this to a rough column / rows. Then, on establishing the P2P connection I can sent a `setup` JSON message which the Actions VM uses to start `pty.spawn` with the righ sizing for the terminal.
+
+## We're done, right?
+
+What we have so far looks like this:
+
+```
+┌─────────────────┐                              ┌─────────────────┐
+│  GitHub Runner  │◄────────────────────────────►│    Browser      │
+│  (TypeScript)   │      Direct P2P (WebRTC)     │  (ghostty-web)  │
+│                 │                              │                 │
+└────────┬────────┘                              └────────┬────────┘
+         │                                                │
+         │ Register session                               │ Get sessions
+         │ (OIDC Token Auth)                              │ (GitHub OAuth)
+         ▼                                                ▼
+         └──────────────►┌─────────────────┐◄─────────────┘
+                         │     Server      │
+                         │   (Go - Auth    │
+                         │   & Discovery)  │
+                         └─────────────────┘
+
+```
+
+Not quite, there is a lot of trust that my signaling server will do the right things. Let's do better.
+
+## Trust vs Zero-Trust
+
+I've mentioned already **the signaling server should only hooks up users with actions they're started**. 
+
+That relies on explicit trust, from users of this system, that I'm going to do the right thing.
+
+What if I've got a bug? What if someone compromises the signaling server? What if they steal the domain and run their own server on it? 
+
+Well, then it could hook up peers that shouldn't be connected and do mean things.
+
+Those both sound bad, lets work out how to fix that.
+
+What if the `user` provided the Actions VM with a secret that only they know. When the P2P is connected, the Actions VM could refuse to talk to the browser until it provides that secret.
+
+Secrets are cool and everything but fit they're intercepted they're reusable, could we use a One-Time-Password (OTP) commonly used for 2FA on sites? Sure thing!
+
+What does this flow look like? Roughly it's 👇
+
+```
+┌─────────────────┐                              ┌─────────────────┐
+│  GitHub Runner  │◄────────────────────────────►│    Browser      │
+│  (TypeScript)   │      Direct P2P (WebRTC)     │  (ghostty-web)  │
+└────────┬────────┘                              └────────┬────────┘
+     │                                                │
+     │◄──────── 1. WebRTC Connection Established ────►│
+     │                                                │
+     │◄───────────── 2. Browser sends OTP ────────-───│
+     │                                                │
+     ├ 3. Runner validates OTP against secret         ┤
+     │                                                │
+     │         ┌──────────────────────┐               │
+     │         │  If OTP Valid:       │               │
+     │-────────│  4. Terminal access  │──────────────►│
+               │     granted          │               
+               └──────────────────────┘               
+```
+
+Now, even if the signaling server is manipulated to hook up two peers which shouldn't be connected, the user won't be able to execute commands unless they can provide a OTP. 
+
+Better still the Signaling server (which I run) is never sent either the OTP or the OTP Secret used to validate each OTP. This validation happens between two peers your own (Actions VM and your Browser).
+
+## So now we're done? One last thing... make the signaling server cheap to host
+
+I want to offer this for free for anyone to use. It's a simple `go` binary in a docker image, to allow self-hosting and easy local testing. 
+
+A while ago I'd started poking at `railway.com`, it's cloud with a big billing twist, **you only pay for the CPU and Memory you actually use**.
+
+In Azure/AWS I have to say "I want 2 CPUs and 8GB" and I pay for that regardless of what I use.
+
+On `railway.com` I say "Use **up to** x CPUs and y GB" then you only pay for what the service actually consumes.
+
+![Graph showing 20mb of memory](memory-usage.png)
