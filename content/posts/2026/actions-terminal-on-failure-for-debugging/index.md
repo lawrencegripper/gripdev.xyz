@@ -21,21 +21,23 @@ I think we've all been there, **your build fails in Actions, but the script work
 
 It was in the middle of one of these when I started thinking about how to make it better. 
 
-A Terminal would be great, that's obvious, but how to make it happen? How could I make it a free, open to anyone, without costing me lots of money?
+A Terminal would be great, that's obvious, but how to make it happen? How could I make it free, and open to anyone, without costing me lots of money?
 
-Operating a service that forward traffic between a user and the Actions VM would cost money. 
+Operating a service that forward traffic between a user and the Actions VM would stack up data transfer costs and take some work to scale.
 
 What about a Peer-to-Peer connection? I'd recently been going deeper on how [Tailscale](https://tailscale.com/blog/how-tailscale-works), [iroh](https://github.com/n0-computer/iroh) and [WebRTC](https://webrtc.org/) use [UDP Hole Punching to create Peer-to-Peer (P2P) connections](https://tailscale.com/blog/how-nat-traversal-works) between nodes without relaying traffic. [^2]
 
+If that worked then my server would only need to exchange a tiny bit of information per session and hopefully cost me very little 🤞
+
 Could I use P2P and funnel a terminal session over it? Well the Actions VM is on the internet and allows UDP outbound, so it should work!
 
-A simple bit of scripting proved it did 🥳 With WebRTC, if the two nodes exchange information about their connectivity ([ICE Candidates](https://webrtc.org/getting-started/peer-connections#ice_candidates)) then I could form a connection.[^3]
+A simple bit of scripting proved it did 🥳 With WebRTC, if the Actions VM and my local machine exchange information about their connectivity ([ICE Candidates](https://webrtc.org/getting-started/peer-connections#ice_candidates)), then I could form a connection.[^3]
 
 ## Security and Identities
 
 The next problem is, **how do you prove each end of the P2P connection is who they say they are?**
 
-It's important. I want to ensure that `lawrencegripper` can only access terminals for Actions triggered by `lawrencegripper`. 
+It's important. I want to ensure that `lawrencegripper` can only access terminals for Actions triggered by `lawrencegripper`.
 
 The browser side is relatively easy, we can use OAuth to login via GitHub and get a verified username ✅
 
@@ -71,7 +73,7 @@ You request a token via a REST request in the action, for example:
     });
 ```
 
-> [Complete code](https://github.com/lawrencegripper/actions-term-on-fail/blob/21c8350bc33a4bf4451473eabecc9d7b2eedc716/client/src/index.ts#L35-L70)
+> [🔗 code](https://github.com/lawrencegripper/actions-term-on-fail/blob/21c8350bc33a4bf4451473eabecc9d7b2eedc716/client/src/index.ts#L35-L70)
 
 Then, when the Action calls our server, it can include this token. We can then validate it cryptographically via JWKS:
 
@@ -98,7 +100,7 @@ Then, when the Action calls our server, it can include this token. We can then v
 	}
 ```
 
-> [Complete code](https://github.com/lawrencegripper/actions-term-on-fail/blob/main/server/main.go#L173-L221)
+> [🔗 code](https://github.com/lawrencegripper/actions-term-on-fail/blob/main/server/main.go#L173-L221)
 
 ## Connecting the Peers (ie. [Signaling Server](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity#signaling)) 
 
@@ -106,13 +108,13 @@ At this point we know:
 1. We can create a connection between two peers (Actions VM <-> Users Browser) with WebRTC
 2. We have a way to validate the identity of both ends of the connection (OAuth and OIDC)
 
-What's left is the server to introduce the two peers 🤝. Let's build a server to do that.
+What's left is the server to introduce the two peers 🤝 Let's build a server to do that.
 
 The server doesn't need to handle the terminal data, that goes between the two peers directly, it's only doing introductions. 
 
 When the VM and Browser are connected to the server it should send each one the connection details for the other.
 
-To do this the browser and the VM both create [Server-sent events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) connections, allowing the signaling server to push events to them. They prove their identities by providing their OAuth credentials or OIDC to prove their identity.
+To do this, the browser and the VM both create [Server-sent events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) connections, allowing the signaling server to push events to them. They prove their identities by providing their OAuth credentials or OIDC to prove their identity.
 
 The server then stores:
 
@@ -144,7 +146,7 @@ For bonus points, when a new Actions VM connects, I can see if a browser is open
 	}
 ```
 
-> [Full Code](https://github.com/lawrencegripper/actions-term-on-fail/blob/255c79feee7d2cbb854144409a93bdd3a03fcdb4/server/main.go#L262-L271)
+> [🔗 Code](https://github.com/lawrencegripper/actions-term-on-fail/blob/255c79feee7d2cbb854144409a93bdd3a03fcdb4/server/main.go#L262-L271)
 
 ## Displaying the Terminal
 
@@ -167,14 +169,15 @@ On the Actions VM side we create a `pty.Shell` and stream that data over our `da
         dc.sendMessage(shellData);
     });
 ```
+> [code 🔗](https://github.com/lawrencegripper/actions-term-on-fail/blob/6f46d09ac86757f72e74fe070bb4c7f745ea09c6/client/src/index.ts#L417-L423)
 
 In the browser we then need to display an interactive terminal. 
 
-Reading around the awesome [Ghostty library](https://github.com/coder/ghostty-web) has an xterm.js compatible implementation, I hooked this up and it worked first time 🥰
+Reading around, I found the this awesome [Ghostty library](https://github.com/coder/ghostty-web). It has an xterm.js compatible implementation, I hooked this up and it worked first time 🥰
 
 Well it did.. and it didn't, the Terminal spawned via PTY doesn't have any idea how big our terminal in the browser (Lines and Columns) so we get some horrible rendering in the terminal. 
 
-With a bit of poking, googling and some Opus 4.5, I created some code which estimates the size of terminal, via font sizing, and converts this to a rough column / rows. Then, on establishing the P2P connection I can send a `setup` JSON message which the Actions VM uses to start `pty.spawn` with the right sizing for the terminal.
+With a bit of poking, googling and some Opus 4.5, I created a method which estimates the size of terminal, via font sizing, and converts this to a rough column / rows. Then, on establishing the P2P connection I can send a `setup` JSON message which the Actions VM uses to start `pty.spawn` with the right sizing for the terminal.
 
 ## We're done, right?
 
@@ -222,23 +225,24 @@ Secrets are cool and everything but if they're intercepted they're reusable, cou
 
 What does this flow look like? Roughly it's 👇
 
-```
+```text
 ┌─────────────────┐                              ┌─────────────────┐
 │  GitHub Runner  │◄────────────────────────────►│    Browser      │
 │  (TypeScript)   │      Direct P2P (WebRTC)     │  (ghostty-web)  │
 └────────┬────────┘                              └────────┬────────┘
-     │                                                │
-     │◄──────── 1. WebRTC Connection Established ────►│
-     │                                                │
-     │◄───────────── 2. Browser sends OTP ────────-───│
-     │                                                │
-     ├ 3. Runner validates OTP against secret         ┤
-     │                                                │
-     │         ┌──────────────────────┐               │
-     │         │  If OTP Valid:       │               │
-     │-────────│  4. Terminal access  │──────────────►│
-               │     granted          │               
-               └──────────────────────┘               
+         │                                                │
+         │◄───── 1. WebRTC Connection Established ───────►│
+         │                                                │
+         │◄─────────── 2. Browser sends OTP ────── ───────│
+         │                                                │
+         │  3. Runner validates OTP against secret        │
+         │                                                │
+         │              ┌──────────────────┐              │
+         │              │  If OTP Valid:   │              │
+         │──────────────│  4. Terminal     │─────────────►│
+                        │     access       │
+                        │     granted      │
+                        └──────────────────┘
 ```
 
 Even if the signaling server is manipulated, to hook up two peers which shouldn't be connected, the user won't be able to execute commands unless they can provide a valid OTP. 
@@ -251,11 +255,11 @@ This validation happens between two peers you own (Actions VM and your Browser).
 
 One last thing... make the signaling server cheap to host.
 
-I want to offer this for free for anyone to use. It's a simple `go` binary in a docker image to make it easy to self-hosting and test locally. 
+I want to offer this for free for anyone to use. It's a simple `go` binary in a docker image (to make it easy to self-hosting and test locally) but it needs to live on the internet. 
 
-A while ago I'd started poking at [`railway.com`](https://railway.com/), it's cloud with a big billing twist, **you only pay for the CPU and Memory you actually use**.
+A while ago I'd started poking at [railway.com](https://railway.com/), it's cloud with a big billing twist, **you only pay for the CPU and Memory you actually use**. This felt like a great time to try it out.
 
-Let's take an example:
+How is the billing different, well...
 
 - In Azure/AWS I have to say "I want 2 CPUs and 8GB" and I pay for that regardless of what I use.
 - On [railway.com](https://railway.com/) I say "Use **up to** x CPUs and y GB" then you only pay for what the service actually consumes.
@@ -264,7 +268,7 @@ Let's take an example:
 
 How does this work out for the signaling server?
 
-**Really well**: it's peak memory usage so far is 20MB!
+**Really well** it's peak memory usage so far is 20MB, racking up a mean $0.00000... you get the point. It's not costing much, as I'm not reserving a small machine with GBs of mem to run a service needing 20MB
 
 ![Graph showing 20mb of memory](memory-usage.png)
 
