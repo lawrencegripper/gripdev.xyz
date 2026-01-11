@@ -8,7 +8,7 @@ url: /2026/01/10/actions-terminal-on-failure-for-debugging/
 draft: true
 ---
 
-**Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/
+**Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/[^1]
 
 {{< video src="./termdemo.mp4" >}}
 
@@ -23,9 +23,9 @@ It was in the middle of one of these when I started thinking about how to make i
 
 A Terminal would be great, that's obvious, but how to make it happen? How could I make it a free, open to anyone, without costing me lots of money?
 
-Operating a service that forward traffic between a customer and the Actions VM would cost money. 
+Operating a service that forward traffic between a user and the Actions VM would cost money. 
 
-What about a Peer-to-Peer connection? I'd recently been reading about how [Tailscale](https://tailscale.com/blog/how-tailscale-works), [iroh](https://github.com/n0-computer/iroh) and [WebRTC](https://webrtc.org/) use [UDP Hole Punching to create Peer-to-Peer (P2P) connections](https://tailscale.com/blog/how-nat-traversal-works) between nodes without relaying traffic. 
+What about a Peer-to-Peer connection? I'd recently been going deeper on how [Tailscale](https://tailscale.com/blog/how-tailscale-works), [iroh](https://github.com/n0-computer/iroh) and [WebRTC](https://webrtc.org/) use [UDP Hole Punching to create Peer-to-Peer (P2P) connections](https://tailscale.com/blog/how-nat-traversal-works) between nodes without relaying traffic. [^2]
 
 Could I use P2P and funnel a terminal session over it? Well the Actions VM is on the internet and allows UDP outbound, so it should work!
 
@@ -279,3 +279,9 @@ What does a cold start look like on our simple signalling server? It's hardly re
 Here is a recording, on the left you see the server is sleeping and on the right I hit the domain, there is a slight pause before the page renders ✨
 
 {{< video src="./sleep.mp4" >}}
+
+
+### Footnotes
+
+[^1]: This is a personal project with no support/guarantees
+[^2]: I couldn't quite get the iroh stack to play nice in-browser so fell back to WebRTC but do want to revisit that in future.
