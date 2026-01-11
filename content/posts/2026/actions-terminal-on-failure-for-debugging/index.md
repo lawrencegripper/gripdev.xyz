@@ -8,7 +8,7 @@ url: /2026/01/10/actions-terminal-on-failure-for-debugging/
 draft: false
 ---
 
-**Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/ [^1]
+**Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/ ([code 🔗](https://github.com/lawrencegripper/actions-term-on-fail)) [^1]
 
 {{< video src="./termdemo.mp4" >}}
 
