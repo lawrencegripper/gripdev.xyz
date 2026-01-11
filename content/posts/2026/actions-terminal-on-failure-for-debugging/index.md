@@ -1,14 +1,14 @@
 ---
-title: "Using WebRTC to get an interactive terminal to GitHub Actions"
-date: 2025-05-06T07:02:00+00:00
+title: "Using WebRTC to launch a debugging terminal into GitHub Actions"
+date: 2026-01-11T17:31:00+00:00
 author: "Lawrence Gripper"
 tags: ["programming", "github", "actions", "terminal", "debugging"]
 categories: ["programming"]
 url: /2026/01/10/actions-terminal-on-failure-for-debugging/
-draft: true
+draft: false
 ---
 
-**Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/[^1]
+**Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/ [^1]
 
 {{< video src="./termdemo.mp4" >}}
 
@@ -29,7 +29,7 @@ What about a Peer-to-Peer connection? I'd recently been going deeper on how [Tai
 
 Could I use P2P and funnel a terminal session over it? Well the Actions VM is on the internet and allows UDP outbound, so it should work!
 
-A simple bit of scripting proved it did 🥳 With WebRTC, if the two nodes exchange information about their connectivity ([ICE Candidates](https://webrtc.org/getting-started/peer-connections#ice_candidates)) then I could form a connection.
+A simple bit of scripting proved it did 🥳 With WebRTC, if the two nodes exchange information about their connectivity ([ICE Candidates](https://webrtc.org/getting-started/peer-connections#ice_candidates)) then I could form a connection.[^3]
 
 ## Security and Identities
 
@@ -258,13 +258,13 @@ A while ago I'd started poking at [`railway.com`](https://railway.com/), it's cl
 Let's take an example:
 
 - In Azure/AWS I have to say "I want 2 CPUs and 8GB" and I pay for that regardless of what I use.
-- On `railway.com` I say "Use **up to** x CPUs and y GB" then you only pay for what the service actually consumes.
+- On [railway.com](https://railway.com/) I say "Use **up to** x CPUs and y GB" then you only pay for what the service actually consumes.
 
 > Note: In either Azure/AWS or Railway you still pay network egress.
 
 How does this work out for the signaling server?
 
-**Amazingly well**: it's peak memory usage so far is 20MB!
+**Really well**: it's peak memory usage so far is 20MB!
 
 ![Graph showing 20mb of memory](memory-usage.png)
 
@@ -274,14 +274,14 @@ This was where I found a platform feature called [sleeping](https://docs.railway
 
 When the service isn't doing anything, Railway spin down the service. If someone turns up, they hold the connection for a moment while restoring the container, then send the request through.
 
-What does a cold start look like on our simple signalling server? It's hardly recognizable! 
+What does a cold start look like on our simple signalling server? It's hardly recognizable.
 
 Here is a recording, on the left you see the server is sleeping and on the right I hit the domain, there is a slight pause before the page renders ✨
 
 {{< video src="./sleep.mp4" >}}
 
-
 ### Footnotes
 
-[^1]: This is a personal project with no support/guarantees
+[^1]: This is a personal project with no support/guarantees.
 [^2]: I couldn't quite get the iroh stack to play nice in-browser so fell back to WebRTC but do want to revisit that in future.
+[^3]: I don't configure a [TURN](https://webrtc.org/getting-started/turn-server)/relay server so if your network doesn't allow UDP hole punching you won't be able to connect.
