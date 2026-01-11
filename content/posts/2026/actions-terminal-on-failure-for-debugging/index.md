@@ -1,5 +1,5 @@
 ---
-title: "Using WebRTC to get an interactive terminal when GitHub Actions fail"
+title: "Using WebRTC to get an interactive terminal to GitHub Actions"
 date: 2025-05-06T07:02:00+00:00
 author: "Lawrence Gripper"
 tags: ["programming", "github", "actions", "terminal", "debugging"]
@@ -9,6 +9,8 @@ draft: true
 ---
 
 **Spoiler:** I made a free and open-source way to get an interactive web terminal to your GitHub Action when it fails. Try it out here: https://actions-term.gripdev.xyz/
+
+{{< video src="./termdemo.mp4" >}}
 
 ## Building it
 
@@ -272,5 +274,8 @@ This was where I found a platform feature called [sleeping](https://docs.railway
 
 When the service isn't doing anything, Railway spin down the service. If someone turns up, they hold the connection for a moment while restoring the container, then send the request through.
 
-What does a cold start look like on our simple signalling server? It's hardly recognizable! Here is a recording of it happening:
+What does a cold start look like on our simple signalling server? It's hardly recognizable! 
 
+Here is a recording, on the left you see the server is sleeping and on the right I hit the domain, there is a slight pause before the page renders ✨
+
+{{< video src="./sleep.mp4" >}}
